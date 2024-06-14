@@ -1,16 +1,16 @@
 var mongoose = require('mongoose');
 var Product = require('./products.js');
-var Faker = require('faker');
+const { faker } = require('@faker-js/faker');
 
 mongoose.connect(
-    'mongodb://localhost:27017/http_client');
+    'mongodb://localhost:27017/teste');
 
     async function generateProducts() {
         for(let i=0;i<10;i++){
             let p = new Product({
-                name: Faker.commerce.productName(),
-                departament: Faker.commerce.departament(),
-                price: Faker.commerce.price()
+                name: faker.commerce.productName(),
+                departament: faker.commerce.department(),
+                price: faker.commerce.price()
             });
             try{
                 await p.save();
