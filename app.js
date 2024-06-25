@@ -1,33 +1,27 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const cors = require('cors');
 const Product = require('./products.js');
 
 var app = express();
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended:true}));
-app.use(cors);
 
 mongoose.connect(
-    'mongodb://localhost:27017/teste');
+    'mongodb://localhost:27017/teste').
+    catch(error => handleError(error));
 
-var myLogger = function (req , res , next ){
-    console.log(req.body);
-    next();
-}
+app.get('/products', function(req, res) {
+    const db = mongoose.connection.useDb('products', {
+      useCache: true
+    });
+  
+    console.log('Find users from', db.name);
+    
+    Product.find().
+      then(users => res.json({ users })).
+      catch(err => res.status(500).json({ message: err.message }));
+  });
 
-app.use(myLogger);
-
-app.get('/products', function(req,res){
-    Product.find().lean().exec(
-        (err, prods) => {
-            if(err)
-                res.status(500).send(err);
-            else
-                res.status(200).send(prods);
-        }
-    )
-})
-
-app.listen(3000);
+app.listen(3000,function(){
+    console.log('RODANDO...')
+});
